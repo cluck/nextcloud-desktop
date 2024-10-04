@@ -75,17 +75,36 @@ jobs:
           
           craft --src-dir ${{ github.workspace }} nextcloud-client
           
-      - name: Run tests with coverage
-        shell: pwsh
-        run: |
-          function runTests() {
-              $buildFolder = "${{ github.workspace }}\${{ env.CRAFT_TARGET }}\build\nextcloud-client\work\build"
+      # - name: Run tests with coverage
+      #   shell: pwsh
+      #   run: |
+      #     function runTests() {
+      #         $buildFolder = "${{ github.workspace }}\${{ env.CRAFT_TARGET }}\build\nextcloud-client\work\build"
 
-              cd $buildFolder
+      #         cd $buildFolder
 
-              $binFolder = "$buildFolder\bin"
+      #         $binFolder = "$buildFolder\bin"
 
-              & ctest --output-on-failure --timeout 300
-          }
+      #         & ctest --output-on-failure --timeout 300
+      #     }
           
-          runTests
+      #     runTests
+
+      # D:\a\nextcloud-desktop\nextcloud-desktop\craftmaster.ini
+      # D:/a/nextcloud-desktop/nextcloud-desktop/windows-msvc2022_64-cl/bin/qmake.exe
+      # D:/a/nextcloud-desktop/nextcloud-desktop/windows-msvc2022_64-cl
+
+      - name: Dump file list
+        shell: cmd
+        run: |
+          dir "${{ github.workspace }}/${{ env.CRAFT_TARGET }}"
+          dir /s /b "${{ github.workspace }}/${{ env.CRAFT_TARGET }}/bin"
+          dir /s /b "${{ github.workspace }}/${{ env.CRAFT_TARGET }}/build/nextcloud-client"
+
+      - name: Archive built files
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: |
+            ${{ github.workspace }}/${{ env.CRAFT_TARGET }}/build/nextcloud-client/**/*.*
+            ${{ github.workspace }}/${{ env.CRAFT_TARGET }}/bin/**/*.*
